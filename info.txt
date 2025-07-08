@@ -1,0 +1,58 @@
+Info needed for making the chip8 emulator
+
+4096 (0x1000) memory locations
+- all one byte
+interpreter on the first 512 bytes
+programs start at 512 (0x200) and dont go below
+uppermost 256 bytes (0xF000-0xFFF) used for display refresh
+- 96 bytes below (0xEA0-0xEFF) used for call stack, internal use, and other variables
+
+REGISTERS
+16 8-bit data registers (V0 - VF)
+- VF doubles as flag for some instructions
+	- in addition, it is the carry flag 
+	- in subtraction, no borry flag
+	- in pixel collision in draw instruction 
+- try to avoid
+address register (I) 12 bits used with opcodes involving memory operations
+
+STACK
+return addresses when subroutines called
+original had 48 bytes w/ up to 12 nesting levels
+- modern implimentation more 
+
+TIMERS
+delay timer used for timing events of games
+- value can be set and read
+sound timer used for sound effects
+- when nonzero, beeping sound is made
+- value can only be set
+count at 60 hz until reach 0
+
+INPUT 
+done with hex keyboard
+- 16 keys 0 to F
+8 4 6 2 used for directional input
+three opcodes used to detect input
+- One skips instruction if key pressed
+- two skips instruction if key not pressed
+- three waits for key press then stores it in one of the data regs
+
+GRAPHICS AND SOUND
+64x32 pixels
+monochrome
+done by drawing sprites
+- 8 pixels wide, 1 to 15 pixels high
+sprite pixels xor'd with screen pixels
+- set pixels flip colour, unset do nothing
+carry flag (VF) is set to 1 if any screen pixels flipped from set to unset when sprite drawn else set to 0
+- used for collision detection
+
+MODERN IMPLIMENTATION
+no need to avoid lower 512 bytes (0x000-0x1FF) as interpretor is not stored on chip
+- usually font data is stored here
+more than 48 bytes of stack
+
+OPCODE TABLE
+35 opcodes, all two bytes long, big-endian (biggest digit to smallest)
+- see in wiki (en.wikipedia.org/wiki/CHIP-8)
